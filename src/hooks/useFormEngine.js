@@ -123,7 +123,7 @@ export function useFormEngine(schema, initialValues = {}, onSubmit) {
             setAsyncValidating(prev => ({ ...prev, [field.name]: true }))
             try {
               const isValid = await validation.validator(value, allValues)
-              if (!isValid) {
+              if (isValid !== true) {
                 fieldErrors.push(validation.message || '异步验证失败')
               }
             } catch (error) {
@@ -161,7 +161,11 @@ export function useFormEngine(schema, initialValues = {}, onSubmit) {
 
   const handleChange = useCallback((name, value) => {
     setValue(name, value)
-    setErrors(prev => ({ ...prev, [name]: [] }))
+    setErrors(prev => {
+      const newErrors = { ...prev }
+      delete newErrors[name]
+      return newErrors
+    })
   }, [setValue])
 
   const handleBlur = useCallback(async (name) => {
@@ -228,6 +232,7 @@ export function useFormEngine(schema, initialValues = {}, onSubmit) {
     visibleFields,
     getValue,
     setValue,
+    setFieldTouched,
     handleChange,
     handleBlur,
     handleSubmit,
@@ -237,6 +242,7 @@ export function useFormEngine(schema, initialValues = {}, onSubmit) {
     getFieldError,
     isFieldTouched,
     isAsyncValidating,
+    evaluateCondition,
     isDirty,
     isValid,
   }
